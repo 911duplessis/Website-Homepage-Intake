@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundation Brief — Website Intake</title>
+<style>
+  :root{
+    --navy:#0F1E2E;
+    --navy-deep:#0A1620;
+    --line:#2A4A63;
+    --line-soft:#1D3549;
+    --chalk:#EDEFF2;
+    --slate:#8494A8;
+    --amber:#E8A33D;
+    --amber-dim:#B87E28;
+    --ok:#6FAE8A;
+    --mono: 'IBM Plex Mono', 'Space Mono', Consolas, monospace;
+    --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/100% 28px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/28px 100%,
+      var(--navy);
+    background-blend-mode: normal;
+    color:var(--chalk);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:840px;margin:0 auto;padding:40px 20px 100px;}
+
+  /* Title block, like a drawing sheet header */
+  .titleblock{
+    border:1px solid var(--line);
+    background:rgba(10,22,32,0.55);
+    padding:22px 24px;
+    margin-bottom:28px;
+  }
+  .titleblock .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.16em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .titleblock h1{
+    font-family:var(--mono);
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  .titleblock p{
+    color:var(--slate);
+    font-size:14px;
+    line-height:1.6;
+    margin:0;
+    max-width:60ch;
+  }
+  .meta-row{
+    display:flex;
+    gap:24px;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--slate);
+    flex-wrap:wrap;
+  }
+  .meta-row span b{color:var(--chalk);}
+
+  /* Progress */
+  .progress-outer{
+    position:sticky; top:0; z-index:10;
+    background:var(--navy-deep);
+    border-bottom:1px solid var(--line);
+    padding:10px 20px;
+    margin:0 -20px 28px;
+  }
+  .progress-inner{max-width:840px;margin:0 auto;display:flex;align-items:center;gap:14px;}
+  .progress-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--slate);white-space:nowrap;}
+  .progress-track{flex:1;height:4px;background:var(--line-soft);position:relative;}
+  .progress-fill{height:100%;background:var(--amber);width:0%;transition:width .3s ease;}
+  .progress-pct{font-family:var(--mono);font-size:11px;color:var(--amber);min-width:34px;text-align:right;}
+
+  /* Sheets (sections) */
+  .sheet{
+    border:1px solid var(--line);
+    margin-bottom:14px;
+    background:rgba(15,30,46,0.4);
+  }
+  .sheet-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .sheet-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--amber);
+    border:1px solid var(--amber-dim);
+    padding:2px 7px;
+    min-width:28px;
+    text-align:center;
+  }
+  .sheet-title{
+    font-family:var(--mono);
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.02em;
+    flex:1;
+  }
+  .sheet-status{
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--slate);
+    letter-spacing:.08em;
+  }
+  .sheet-status.filled{color:var(--ok);}
+  .chevron{
+    font-family:var(--mono);
+    color:var(--slate);
+    transition:transform .2s ease;
+    font-size:12px;
+  }
+  .sheet.open .chevron{transform:rotate(90deg);}
+  .sheet-body{
+    display:none;
+    padding:4px 18px 20px;
+    border-top:1px dashed var(--line);
+  }
+  .sheet.open .sheet-body{display:block;}
+
+  .field{margin-top:16px;}
+  .field label{
+    display:block;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.04em;
+    color:var(--slate);
+    margin-bottom:6px;
+    text-transform:uppercase;
+  }
+  .field .hint{
+    font-size:12px;
+    color:var(--slate);
+    font-style:italic;
+    margin:-3px 0 6px;
+    opacity:.8;
+  }
+  input[type=text], input[type=url], input[type=email], textarea, select{
+    width:100%;
+    background:var(--navy-deep);
+    border:1px solid var(--line);
+    color:var(--chalk);
+    padding:9px 11px;
+    font-family:var(--sans);
+    font-size:14px;
+    outline:none;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--amber);}
+  textarea{min-height:64px;resize:vertical;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  @media (max-width:600px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .chip{
+    font-family:var(--mono);
+    font-size:12px;
+    border:1px solid var(--line);
+    padding:6px 10px;
+    cursor:pointer;
+    color:var(--slate);
+    transition:all .15s ease;
+  }
+  .chip.active{border-color:var(--amber);color:var(--amber);background:rgba(232,163,61,0.08);}
+
+  .subitem{
+    border-left:2px solid var(--line-soft);
+    padding-left:14px;
+    margin-top:14px;
+  }
+  .subitem-label{font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.06em;margin-bottom:6px;}
+
+  /* CTA */
+  .generate-bar{
+    position:sticky;
+    bottom:0;
+    margin:32px -20px 0;
+    padding:16px 20px;
+    background:var(--navy-deep);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:center;
+  }
+  .btn{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:12px 26px;
+    border:1px solid var(--amber);
+    background:var(--amber);
+    color:var(--navy-deep);
+    cursor:pointer;
+    font-weight:700;
+  }
+  .btn:hover{background:transparent;color:var(--amber);}
+  .btn.ghost{background:transparent;color:var(--chalk);border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--chalk);}
+  .btn.small{padding:8px 16px;font-size:11px;}
+
+  /* Output */
+  .output{
+    display:none;
+    margin-top:28px;
+    border:1px solid var(--amber-dim);
+    background:var(--navy-deep);
+  }
+  .output.show{display:block;}
+  .output-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 18px;
+    border-bottom:1px dashed var(--line);
+  }
+  .output-head h2{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0;
+  }
+  .output-actions{display:flex;gap:8px;}
+  .output pre{
+    padding:20px;
+    margin:0;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.7;
+    color:var(--chalk);
+    max-height:520px;
+    overflow-y:auto;
+  }
+  .copied-msg{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ok);
+    align-self:center;
+    display:none;
+  }
+</style>
+</head>
+<body>
+<div class="progress-outer">
+  <div class="progress-inner">
+    <span class="progress-label">BRIEF PROGRESS</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="titleblock">
+    <div class="eyebrow">Foundation Brief · Sheet Set 01–18</div>
+    <h1>Website Homepage Intake</h1>
+    <p>Fill out each sheet below. When you're done, generate a single structured brief — ready to hand to Claude to produce a complete homepage, brand identity, SEO foundation, and HTML artifact.</p>
+    <div class="meta-row">
+      <span>Drawn for: <b>Any industry</b></span>
+      <span>Output: <b>Claude-ready prompt</b></span>
+      <span>Format: <b>Single-file HTML deliverable</b></span>
+    </div>
+  </div>
+
+  <div id="sheets"></div>
+
+  <div class="generate-bar">
+    <button class="btn" onclick="generateBrief()">Generate Brief →</button>
+  </div>
+
+  <div class="output" id="output">
+    <div class="output-head">
+      <h2>Compiled Brief</h2>
+      <div class="output-actions">
+        <span class="copied-msg" id="copiedMsg">Copied ✓</span>
+        <button class="btn ghost small" onclick="copyBrief()">Copy</button>
+        <button class="btn ghost small" onclick="downloadBrief()">Download .txt</button>
+      </div>
+    </div>
+    <pre id="outputText"></pre>
+  </div>
+</div>
+
+<script>
+// ---- Data model: sheets, each with fields ----
+const sheets = [
+  { title:"Business Identity", fields:[
+    {id:"biz_name", label:"Business / brand name", type:"text"},
+    {id:"biz_domain", label:"Website domain (if available)", type:"text"},
+    {id:"biz_industry", label:"Industry / category", type:"chips", options:["Construction","Landscaping","Engineering","Professional Services","Retail","E-commerce","Hospitality","Health & Wellness","Technology","Finance","Education","Other"]},
+    {id:"biz_desc", label:"Briefly describe your business", type:"textarea"},
+    {id:"biz_problem", label:"What problem does your business solve?", type:"textarea"},
+    {id:"biz_diff", label:"What makes you different from competitors?", type:"textarea"},
+  ]},
+  { title:"Brand Assets", fields:[
+    {id:"brand_primary", label:"Primary colour (HEX)", type:"text"},
+    {id:"brand_secondary", label:"Secondary colour (HEX)", type:"text"},
+    {id:"brand_accent", label:"Accent colour (HEX)", type:"text"},
+    {id:"brand_style", label:"Brand style", type:"chips", options:["Premium / Luxury","Modern / Minimal","Corporate / Professional","Friendly / Family","Bold / Industrial","Natural / Organic","Tech / Futuristic","Traditional / Heritage"]},
+    {id:"brand_logo_note", label:"Logo notes (files uploaded separately)", type:"text", hint:"e.g. PNG, transparent background, high-res"},
+  ]},
+  { title:"Target Customer", fields:[
+    {id:"cust_who", label:"Who is your ideal customer?", type:"chips", options:["Homeowners","Businesses","Government","Developers","Investors","Online Customers","Other"]},
+    {id:"cust_area", label:"Customer location / service area", type:"text", hint:'e.g. "Johannesburg and Gauteng"'},
+    {id:"cust_need1", label:"Customer problem or need — 1", type:"text"},
+    {id:"cust_need2", label:"Customer problem or need — 2", type:"text"},
+    {id:"cust_need3", label:"Customer problem or need — 3", type:"text"},
+  ]},
+  { title:"Homepage Structure", fields:[
+    {id:"nav_position", label:"Logo position", type:"chips", options:["Left","Center","Other"]},
+    {id:"nav_tabs", label:"Navigation tabs (one per line, max 7)", type:"textarea", hint:"e.g. Home / About / Services / Gallery / Pricing / Reviews / Contact"},
+    {id:"nav_cta_text", label:"Header CTA button text", type:"text", hint:'e.g. "Get Quote"'},
+    {id:"nav_cta_link", label:"CTA link destination", type:"text"},
+  ]},
+  { title:"Hero Section", fields:[
+    {id:"hero_h1", label:"Main headline (H1)", type:"text", hint:'Formula: "We help [customer] achieve [result]"'},
+    {id:"hero_sub", label:"Supporting text (2–3 sentences)", type:"textarea"},
+    {id:"hero_image", label:"Hero image type", type:"chips", options:["Main business image","Product image","Team image","Location image"]},
+    {id:"hero_btn_primary", label:"Primary button text", type:"text"},
+    {id:"hero_btn_secondary", label:"Secondary button text", type:"text"},
+  ]},
+  { title:"Trust Section", fields:[
+    {id:"trust_years", label:"Years operating", type:"text"},
+    {id:"trust_projects", label:"Projects completed", type:"text"},
+    {id:"trust_customers", label:"Customers served", type:"text"},
+    {id:"trust_certs", label:"Certifications", type:"text"},
+    {id:"trust_awards", label:"Awards", type:"text"},
+    {id:"trust_guarantees", label:"Guarantees", type:"text"},
+  ]},
+  { title:"About Us", fields:[
+    {id:"about_heading", label:"About heading (H2)", type:"text", hint:'e.g. "Built on Quality, Trust and Experience"'},
+    {id:"about_story", label:"Company story (who, why, mission)", type:"textarea"},
+    {id:"about_founder_name", label:"Founder / team member — name", type:"text"},
+    {id:"about_founder_role", label:"Position", type:"text"},
+    {id:"about_founder_bio", label:"Short biography", type:"textarea"},
+  ]},
+  { title:"Services / Products", fields:[
+    {id:"svc_heading", label:"Section heading (H2)", type:"text"},
+    {id:"svc1_name", label:"Service / product 1 — name", type:"text"},
+    {id:"svc1_desc", label:"Service / product 1 — description", type:"textarea"},
+    {id:"svc1_price", label:"Service / product 1 — price (optional)", type:"text"},
+    {id:"svc2_name", label:"Service / product 2 — name", type:"text"},
+    {id:"svc2_desc", label:"Service / product 2 — description", type:"textarea"},
+    {id:"svc2_price", label:"Service / product 2 — price (optional)", type:"text"},
+    {id:"svc3_name", label:"Service / product 3 — name", type:"text"},
+    {id:"svc3_desc", label:"Service / product 3 — description", type:"textarea"},
+    {id:"svc3_price", label:"Service / product 3 — price (optional)", type:"text"},
+  ]},
+  { title:"Pricing", fields:[
+    {id:"pricing_display", label:"Do you display pricing?", type:"chips", options:["Yes","No","Starting prices only","Quote required"]},
+    {id:"pkg1_name", label:"Package 1 — name", type:"text"},
+    {id:"pkg1_price", label:"Package 1 — price", type:"text"},
+    {id:"pkg1_includes", label:"Package 1 — includes", type:"textarea"},
+    {id:"pkg2_name", label:"Package 2 — name", type:"text"},
+    {id:"pkg2_price", label:"Package 2 — price", type:"text"},
+    {id:"pkg2_includes", label:"Package 2 — includes", type:"textarea"},
+    {id:"pkg3_name", label:"Package 3 — name", type:"text"},
+    {id:"pkg3_price", label:"Package 3 — price", type:"text"},
+    {id:"pkg3_includes", label:"Package 3 — includes", type:"textarea"},
+  ]},
+  { title:"Process", fields:[
+    {id:"process_1", label:"Step 1", type:"text"},
+    {id:"process_2", label:"Step 2", type:"text"},
+    {id:"process_3", label:"Step 3", type:"text"},
+    {id:"process_4", label:"Step 4", type:"text"},
+  ]},
+  { title:"Gallery / Portfolio", fields:[
+    {id:"gallery_types", label:"Image types available", type:"chips", options:["Before & After","Projects","Products","Team","Location"]},
+    {id:"gallery_heading", label:"Gallery heading", type:"text"},
+  ]},
+  { title:"Reviews / Testimonials", fields:[
+    {id:"review1_name", label:"Review 1 — name", type:"text"},
+    {id:"review1_text", label:"Review 1 — text", type:"textarea"},
+    {id:"review2_name", label:"Review 2 — name", type:"text"},
+    {id:"review2_text", label:"Review 2 — text", type:"textarea"},
+  ]},
+  { title:"FAQ", fields:[
+    {id:"faq1_q", label:"Question 1", type:"text"},
+    {id:"faq1_a", label:"Answer 1", type:"textarea"},
+    {id:"faq2_q", label:"Question 2", type:"text"},
+    {id:"faq2_a", label:"Answer 2", type:"textarea"},
+    {id:"faq3_q", label:"Question 3", type:"text"},
+    {id:"faq3_a", label:"Answer 3", type:"textarea"},
+  ]},
+  { title:"Contact Information", fields:[
+    {id:"contact_phone", label:"Phone", type:"text"},
+    {id:"contact_whatsapp", label:"WhatsApp", type:"text"},
+    {id:"contact_email", label:"Email", type:"text"},
+    {id:"contact_address", label:"Address", type:"text"},
+    {id:"contact_maps", label:"Google Maps link", type:"text"},
+    {id:"contact_hours", label:"Business hours", type:"text"},
+  ]},
+  { title:"Social Media", fields:[
+    {id:"social_fb", label:"Facebook", type:"text"},
+    {id:"social_ig", label:"Instagram", type:"text"},
+    {id:"social_li", label:"LinkedIn", type:"text"},
+    {id:"social_tt", label:"TikTok", type:"text"},
+    {id:"social_yt", label:"YouTube", type:"text"},
+  ]},
+  { title:"SEO Foundation", fields:[
+    {id:"seo_primary", label:"Primary keyword", type:"text", hint:'e.g. "Artificial grass installation Pretoria"'},
+    {id:"seo_secondary", label:"Secondary keywords (one per line)", type:"textarea"},
+    {id:"seo_location", label:"Location keywords", type:"text"},
+    {id:"seo_comp1", label:"Competitor website 1", type:"text"},
+    {id:"seo_comp2", label:"Competitor website 2", type:"text"},
+    {id:"seo_comp3", label:"Competitor website 3", type:"text"},
+  ]},
+  { title:"Legal / Compliance & AI Generation", fields:[
+    {id:"legal_pages", label:"Required legal pages", type:"chips", options:["Privacy Policy","Terms & Conditions","POPIA Compliance","Warranty Information","Returns Policy"]},
+    {id:"tech_stack", label:"Desired technology", type:"chips", options:["Pure HTML/CSS/JS","React","Next.js","WordPress","Other"]},
+    {id:"site_goal", label:"Primary website goal", type:"chips", options:["Generate leads","Sell products","Book appointments","Build credibility","Collect enquiries","Other"]},
+    {id:"style_inspo", label:"Competitor style inspiration (websites you like)", type:"textarea"},
+    {id:"extra_notes", label:"Additional instructions for the AI", type:"textarea", hint:"Defaults to the standard production-ready instruction below if left blank."},
+  ]},
+];
+
+const state = {};
+let totalFields = 0;
+
+// ---- Render ----
+const sheetsEl = document.getElementById('sheets');
+
+sheets.forEach((sheet, si) => {
+  totalFields += sheet.fields.length;
+  const num = String(si+1).padStart(2,'0');
+  const div = document.createElement('div');
+  div.className = 'sheet';
+  div.id = 'sheet-'+si;
+
+  const head = document.createElement('div');
+  head.className = 'sheet-head';
+  head.onclick = () => toggleSheet(si);
+  head.innerHTML = `
+    <span class="sheet-num">${num}</span>
+    <span class="sheet-title">${sheet.title}</span>
+    <span class="sheet-status" id="status-${si}">0 / ${sheet.fields.length}</span>
+    <span class="chevron">▸</span>
+  `;
+  div.appendChild(head);
+
+  const body = document.createElement('div');
+  body.className = 'sheet-body';
+
+  sheet.fields.forEach(f => {
+    const field = document.createElement('div');
+    field.className = 'field';
+    let inputHtml = '';
+    if (f.type === 'textarea') {
+      inputHtml = `<textarea id="${f.id}" oninput="onInput('${f.id}', ${si})"></textarea>`;
+    } else if (f.type === 'chips') {
+      inputHtml = `<div class="chiprow" id="${f.id}"></div>`;
+    } else {
+      inputHtml = `<input type="text" id="${f.id}" oninput="onInput('${f.id}', ${si})">`;
+    }
+    field.innerHTML = `
+      <label for="${f.id}">${f.label}</label>
+      ${f.hint ? `<div class="hint">${f.hint}</div>` : ''}
+      ${inputHtml}
+    `;
+    body.appendChild(field);
+
+    if (f.type === 'chips') {
+      const chipRow = field.querySelector('.chiprow');
+      state[f.id] = new Set();
+      f.options.forEach(opt => {
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.textContent = opt;
+        chip.onclick = () => {
+          chip.classList.toggle('active');
+          if (chip.classList.contains('active')) state[f.id].add(opt);
+          else state[f.id].delete(opt);
+          onInput(f.id, si);
+        };
+        chipRow.appendChild(chip);
+      });
+    }
+  });
+
+  div.appendChild(body);
+  sheetsEl.appendChild(div);
+});
+
+function toggleSheet(si){
+  document.getElementById('sheet-'+si).classList.toggle('open');
+}
+
+function onInput(id, si){
+  const sheet = sheets[si];
+  const el = document.getElementById(id);
+  if (el && el.tagName !== undefined && !(state[id] instanceof Set)) {
+    state[id] = el.value;
+  }
+  updateSheetStatus(si);
+  updateProgress();
+}
+
+function updateSheetStatus(si){
+  const sheet = sheets[si];
+  let filled = 0;
+  sheet.fields.forEach(f => {
+    const v = state[f.id];
+    if (v instanceof Set) { if (v.size > 0) filled++; }
+    else if (v && v.trim && v.trim().length > 0) filled++;
+  });
+  const statusEl = document.getElementById('status-'+si);
+  statusEl.textContent = `${filled} / ${sheet.fields.length}`;
+  statusEl.classList.toggle('filled', filled === sheet.fields.length && sheet.fields.length > 0);
+}
+
+function updateProgress(){
+  let filled = 0;
+  sheets.forEach(sheet => sheet.fields.forEach(f => {
+    const v = state[f.id];
+    if (v instanceof Set) { if (v.size > 0) filled++; }
+    else if (v && v.trim && v.trim().length > 0) filled++;
+  }));
+  const pct = totalFields ? Math.round((filled/totalFields)*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+// Open the first sheet by default
+document.getElementById('sheet-0').classList.add('open');
+
+// ---- Generate compiled brief ----
+function val(id){
+  const v = state[id];
+  if (v instanceof Set) return v.size ? Array.from(v).join(', ') : '';
+  return (v || '').trim();
+}
+
+function generateBrief(){
+  const lines = [];
+  lines.push('WEBSITE FOUNDATION BRIEF');
+  lines.push('Generated for Claude — build a complete homepage, brand identity, SEO foundation, and single-file HTML artifact from the information below.');
+  lines.push('='.repeat(72));
+
+  const section = (title) => { lines.push(''); lines.push('— ' + title.toUpperCase() + ' —'); };
+  const line = (label, id) => { const v = val(id); if (v) lines.push(`${label}: ${v}`); };
+
+  section('Business Identity');
+  line('Business / brand name', 'biz_name');
+  line('Domain', 'biz_domain');
+  line('Industry', 'biz_industry');
+  line('Description', 'biz_desc');
+  line('Problem solved', 'biz_problem');
+  line('Differentiator', 'biz_diff');
+
+  section('Brand Assets');
+  line('Primary colour', 'brand_primary');
+  line('Secondary colour', 'brand_secondary');
+  line('Accent colour', 'brand_accent');
+  line('Style', 'brand_style');
+  line('Logo notes', 'brand_logo_note');
+
+  section('Target Customer');
+  line('Ideal customer', 'cust_who');
+  line('Service area', 'cust_area');
+  const needs = [val('cust_need1'), val('cust_need2'), val('cust_need3')].filter(Boolean);
+  if (needs.length) lines.push('Customer needs: ' + needs.map((n,i)=>`(${i+1}) ${n}`).join(' '));
+
+  section('Homepage Structure');
+  line('Logo position', 'nav_position');
+  const tabs = val('nav_tabs');
+  if (tabs) lines.push('Navigation tabs: ' + tabs.split('\n').map(t=>t.trim()).filter(Boolean).join(' → '));
+  line('Header CTA text', 'nav_cta_text');
+  line('CTA link', 'nav_cta_link');
+
+  section('Hero Section');
+  line('H1 headline', 'hero_h1');
+  line('Supporting text', 'hero_sub');
+  line('Hero image type', 'hero_image');
+  line('Primary button', 'hero_btn_primary');
+  line('Secondary button', 'hero_btn_secondary');
+
+  section('Trust Signals');
+  line('Years operating', 'trust_years');
+  line('Projects completed', 'trust_projects');
+  line('Customers served', 'trust_customers');
+  line('Certifications', 'trust_certs');
+  line('Awards', 'trust_awards');
+  line('Guarantees', 'trust_guarantees');
+
+  section('About Us');
+  line('Heading', 'about_heading');
+  line('Story', 'about_story');
+  line('Founder name', 'about_founder_name');
+  line('Founder role', 'about_founder_role');
+  line('Founder bio', 'about_founder_bio');
+
+  section('Services / Products');
+  line('Section heading', 'svc_heading');
+  [1,2,3].forEach(n => {
+    const name = val(`svc${n}_name`);
+    if (name) {
+      const desc = val(`svc${n}_desc`);
+      const price = val(`svc${n}_price`);
+      lines.push(`Service ${n}: ${name}${price ? ' — ' + price : ''}${desc ? ' — ' + desc : ''}`);
+    }
+  });
+
+  section('Pricing');
+  line('Pricing display', 'pricing_display');
+  [1,2,3].forEach(n => {
+    const name = val(`pkg${n}_name`);
+    if (name) {
+      const price = val(`pkg${n}_price`);
+      const inc = val(`pkg${n}_includes`);
+      lines.push(`Package ${n}: ${name}${price ? ' — ' + price : ''}${inc ? ' — includes: ' + inc : ''}`);
+    }
+  });
+
+  section('Process');
+  const steps = [val('process_1'), val('process_2'), val('process_3'), val('process_4')].filter(Boolean);
+  if (steps.length) lines.push(steps.map((s,i)=>`${i+1}. ${s}`).join('  '));
+
+  section('Gallery / Portfolio');
+  line('Image types available', 'gallery_types');
+  line('Gallery heading', 'gallery_heading');
+
+  section('Reviews / Testimonials');
+  [1,2].forEach(n => {
+    const name = val(`review${n}_name`);
+    const text = val(`review${n}_text`);
+    if (name || text) lines.push(`"${text}" — ${name}`);
+  });
+
+  section('FAQ');
+  [1,2,3].forEach(n => {
+    const q = val(`faq${n}_q`);
+    const a = val(`faq${n}_a`);
+    if (q) lines.push(`Q: ${q}\nA: ${a}`);
+  });
+
+  section('Contact Information');
+  line('Phone', 'contact_phone');
+  line('WhatsApp', 'contact_whatsapp');
+  line('Email', 'contact_email');
+  line('Address', 'contact_address');
+  line('Google Maps link', 'contact_maps');
+  line('Business hours', 'contact_hours');
+
+  section('Social Media');
+  line('Facebook', 'social_fb');
+  line('Instagram', 'social_ig');
+  line('LinkedIn', 'social_li');
+  line('TikTok', 'social_tt');
+  line('YouTube', 'social_yt');
+
+  section('SEO Foundation');
+  line('Primary keyword', 'seo_primary');
+  const secKw = val('seo_secondary');
+  if (secKw) lines.push('Secondary keywords: ' + secKw.split('\n').map(k=>k.trim()).filter(Boolean).join(', '));
+  line('Location keywords', 'seo_location');
+  const comps = [val('seo_comp1'), val('seo_comp2'), val('seo_comp3')].filter(Boolean);
+  if (comps.length) lines.push('Competitors: ' + comps.join(', '));
+
+  section('Legal / Compliance & Build Notes');
+  line('Required legal pages', 'legal_pages');
+  line('Desired technology', 'tech_stack');
+  line('Primary goal', 'site_goal');
+  line('Style inspiration', 'style_inspo');
+
+  lines.push('');
+  lines.push('— AI GENERATION INSTRUCTIONS —');
+  const extra = val('extra_notes');
+  lines.push(extra || 'Create a modern, responsive website using the information above. Prioritize SEO, conversion optimization, trust signals, mobile experience, and accessibility. Build as a single self-contained HTML file with no external dependencies, production-ready and ready to deploy.');
+
+  const output = lines.join('\n');
+  document.getElementById('outputText').textContent = output;
+  document.getElementById('output').classList.add('show');
+  document.getElementById('output').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copyBrief(){
+  const text = document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const msg = document.getElementById('copiedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 1800);
+  });
+}
+
+function downloadBrief(){
+  const text = document.getElementById('outputText').textContent;
+  const bizName = val('biz_name') || 'website-brief';
+  const filename = bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-foundation-brief.txt';
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
