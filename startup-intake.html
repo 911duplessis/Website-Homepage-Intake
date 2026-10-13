@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Intake — InsightForge Blueprint</title>
+<style>
+  :root{
+    --navy:#0F1E2E;
+    --navy-deep:#0A1620;
+    --line:#2A4A63;
+    --line-soft:#1D3549;
+    --chalk:#EDEFF2;
+    --slate:#8494A8;
+    --amber:#E8A33D;
+    --amber-dim:#B87E28;
+    --ok:#6FAE8A;
+    --err:#E07A6B;
+    --mono: 'IBM Plex Mono', 'Space Mono', Consolas, monospace;
+    --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/100% 28px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/28px 100%,
+      var(--navy);
+    color:var(--chalk);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:40px 20px 60px;}
+  .titleblock{border:1px solid var(--line);background:rgba(10,22,32,0.55);padding:22px 24px;margin-bottom:24px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--amber);text-transform:uppercase;margin-bottom:8px;}
+  h1{font-family:var(--mono);font-size:26px;margin:0 0 10px;letter-spacing:-0.01em;}
+  .titleblock p{color:var(--slate);font-size:14px;line-height:1.6;margin:0;max-width:60ch;}
+
+  .sheet{border:1px solid var(--line);background:rgba(15,30,46,0.4);padding:6px 18px 20px;margin-bottom:14px;}
+  .sheet h2{font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin:16px 0 0;display:flex;gap:12px;align-items:center;}
+  .sheet h2 .num{color:var(--amber);border:1px solid var(--amber-dim);padding:2px 7px;font-size:12px;}
+  .field{margin-top:16px;}
+  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--slate);margin-bottom:6px;text-transform:uppercase;}
+  label .req{color:var(--amber);}
+  .hint{font-size:12px;color:var(--slate);font-style:italic;margin:-3px 0 6px;opacity:.8;}
+  input[type=text], input[type=email], textarea, select{
+    width:100%;background:var(--navy-deep);border:1px solid var(--line);color:var(--chalk);
+    padding:9px 11px;font-family:var(--sans);font-size:14px;outline:none;border-radius:0;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--amber);}
+  input.invalid, textarea.invalid{border-color:var(--err);}
+  textarea{min-height:72px;resize:vertical;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:600px){.grid2{grid-template-columns:1fr;}}
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);padding:6px 10px;cursor:pointer;color:var(--slate);background:none;}
+  .chip.active{border-color:var(--amber);color:var(--amber);background:rgba(232,163,61,0.08);}
+  .chip:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;align-items:center;}
+  .btn{font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:12px 24px;border:1px solid var(--amber);background:var(--amber);color:var(--navy-deep);cursor:pointer;font-weight:700;}
+  .btn:hover{background:transparent;color:var(--amber);}
+  .btn:disabled{opacity:.5;cursor:wait;}
+  .btn.ghost{background:transparent;color:var(--chalk);border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--chalk);}
+  .status{font-family:var(--mono);font-size:12px;margin-top:14px;min-height:18px;}
+  .status.ok{color:var(--ok);} .status.err{color:var(--err);}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+
+  .output{display:none;margin-top:24px;border:1px solid var(--amber-dim);background:var(--navy-deep);}
+  .output.show{display:block;}
+  .output-head{padding:12px 18px;border-bottom:1px dashed var(--line);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .output pre{padding:18px;margin:0;white-space:pre-wrap;word-wrap:break-word;font-family:var(--mono);font-size:12.5px;line-height:1.7;max-height:480px;overflow-y:auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="titleblock">
+    <div class="eyebrow">Startup Intake · 3 minutes</div>
+    <h1>Startup Blueprint Intake</h1>
+    <p>Answer the questions below. We'll compile a brief for InsightForge — location analysis, competitor landscape, market gaps and positioning — and email it to the team.</p>
+  </div>
+
+  <form id="intake" novalidate>
+    <div class="hp"><label>Leave blank <input type="text" name="_honey" id="honey" tabindex="-1" autocomplete="off"></label></div>
+
+    <div class="sheet">
+      <h2><span class="num">01</span>The startup</h2>
+      <div class="grid2">
+        <div class="field"><label for="name">Startup name <span class="req">*</span></label><input type="text" id="name" data-req></div>
+        <div class="field"><label for="website">Website / socials (if any)</label><input type="text" id="website"></div>
+      </div>
+      <div class="field"><label for="oneliner">One-line pitch <span class="req">*</span></label><div class="hint">"We help [customer] do [result] by [method]."</div><input type="text" id="oneliner" data-req></div>
+      <div class="field"><label>Industry</label><div class="chiprow" data-chips="industry" data-options="SaaS / Software|E-commerce|Services|Hospitality & Food|Health & Wellness|Construction & Property|Fintech|Education|Manufacturing|Other"></div></div>
+      <div class="field"><label>Stage</label><div class="chiprow" data-chips="stage" data-single data-options="Idea|Pre-launch|Launched, no revenue|Early revenue|Growing"></div></div>
+    </div>
+
+    <div class="sheet">
+      <h2><span class="num">02</span>Problem &amp; customer</h2>
+      <div class="field"><label for="problem">What problem do you solve? <span class="req">*</span></label><textarea id="problem" data-req></textarea></div>
+      <div class="field"><label for="customer">Who is the ideal customer? <span class="req">*</span></label><div class="hint">Role, size, demographics — be specific.</div><textarea id="customer" data-req></textarea></div>
+      <div class="field"><label for="model">How do you make money? (pricing / revenue model)</label><input type="text" id="model"></div>
+    </div>
+
+    <div class="sheet">
+      <h2><span class="num">03</span>Location &amp; market</h2>
+      <div class="grid2">
+        <div class="field"><label for="base">Base location (city, country) <span class="req">*</span></label><input type="text" id="base" data-req></div>
+        <div class="field"><label for="target">Target market / service area</label><input type="text" id="target"></div>
+      </div>
+      <div class="field"><label>Operating model</label><div class="chiprow" data-chips="opmodel" data-single data-options="Physical location|Online only|Hybrid|Mobile / on-site service"></div></div>
+    </div>
+
+    <div class="sheet">
+      <h2><span class="num">04</span>Competitors &amp; gap</h2>
+      <div class="field"><label for="competitors">Known competitors</label><div class="hint">One per line — name or URL. Leave blank and InsightForge will find them.</div><textarea id="competitors"></textarea></div>
+      <div class="field"><label for="gap">Where do you think the gap is? <span class="req">*</span></label><div class="hint">What do existing options do badly or not at all?</div><textarea id="gap" data-req></textarea></div>
+      <div class="field"><label for="diff">Your unfair advantage</label><input type="text" id="diff"></div>
+    </div>
+
+    <div class="sheet">
+      <h2><span class="num">05</span>Goals &amp; contact</h2>
+      <div class="field"><label>What do you need from the blueprint?</label><div class="chiprow" data-chips="goals" data-options="Validate the idea|Pick a location|Competitor teardown|Positioning & messaging|Pricing strategy|Go-to-market plan|Investor pitch"></div></div>
+      <div class="field"><label>Budget range</label><div class="chiprow" data-chips="budget" data-single data-options="Under R50k|R50k–R250k|R250k–R1m|R1m+|Not sure"></div></div>
+      <div class="grid2">
+        <div class="field"><label for="contact_name">Your name <span class="req">*</span></label><input type="text" id="contact_name" data-req></div>
+        <div class="field"><label for="contact_email">Your email <span class="req">*</span></label><input type="email" id="contact_email" data-req></div>
+      </div>
+      <div class="field"><label for="contact_phone">Phone / WhatsApp</label><input type="text" id="contact_phone"></div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn" id="sendBtn">Send to InsightForge →</button>
+      <button type="button" class="btn ghost" id="copyBtn">Copy brief</button>
+      <button type="button" class="btn ghost" id="mailBtn">Open in email app</button>
+    </div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </form>
+
+  <div class="output" id="output">
+    <div class="output-head">Compiled brief</div>
+    <pre id="outputText"></pre>
+  </div>
+</div>
+
+<script>
+const TO_EMAIL = '911duplessis@gmail.com';
+const state = {};
+
+// ---- chips ----
+document.querySelectorAll('[data-chips]').forEach(row => {
+  const id = row.dataset.chips, single = 'single' in row.dataset;
+  state[id] = new Set();
+  row.dataset.options.split('|').forEach(opt => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.textContent = opt;
+    chip.setAttribute('aria-pressed', 'false');
+    chip.onclick = () => {
+      const on = !chip.classList.contains('active');
+      if (single) {
+        row.querySelectorAll('.chip').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed','false'); });
+        state[id].clear();
+      }
+      chip.classList.toggle('active', on);
+      chip.setAttribute('aria-pressed', String(on));
+      if (on) state[id].add(opt); else state[id].delete(opt);
+    };
+    row.appendChild(chip);
+  });
+});
+
+const v = id => {
+  if (state[id] instanceof Set) return [...state[id]].join(', ');
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+};
+
+function validate() {
+  let ok = true;
+  document.querySelectorAll('[data-req]').forEach(el => {
+    const bad = !el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value.trim()));
+    el.classList.toggle('invalid', bad);
+    if (bad) ok = false;
+  });
+  return ok;
+}
+
+function buildBrief() {
+  const L = [];
+  const add = (label, val) => { if (val) L.push(`${label}: ${val}`); };
+  const sec = t => { L.push(''); L.push('— ' + t + ' —'); };
+
+  L.push('INSIGHTFORGE STARTUP BLUEPRINT BRIEF');
+  L.push('='.repeat(60));
+  sec('STARTUP');
+  add('Name', v('name')); add('Website / socials', v('website'));
+  add('One-line pitch', v('oneliner')); add('Industry', v('industry')); add('Stage', v('stage'));
+  sec('PROBLEM & CUSTOMER');
+  add('Problem', v('problem')); add('Ideal customer', v('customer')); add('Revenue model', v('model'));
+  sec('LOCATION & MARKET');
+  add('Base location', v('base')); add('Target market', v('target')); add('Operating model', v('opmodel'));
+  sec('COMPETITORS & GAP');
+  const comps = v('competitors').split('\n').map(s => s.trim()).filter(Boolean);
+  if (comps.length) L.push('Known competitors: ' + comps.join('; '));
+  add('Perceived gap', v('gap')); add('Unfair advantage', v('diff'));
+  sec('GOALS');
+  add('Needs from blueprint', v('goals')); add('Budget', v('budget'));
+  sec('CONTACT');
+  add('Name', v('contact_name')); add('Email', v('contact_email')); add('Phone', v('contact_phone'));
+
+  L.push('');
+  L.push('— INSTRUCTIONS FOR INSIGHTFORGE —');
+  L.push([
+    'Produce a startup blueprint from the information above with these sections:',
+    '1. Location analysis — best-fit areas/cities for the base and target market, foot traffic or demand signals, cost and logistics factors.',
+    '2. Competitor landscape — direct and indirect competitors (include any named above, then find others), their offer, pricing, positioning, strengths and weaknesses.',
+    '3. Market gap analysis — unmet needs and underserved segments; test the founder\'s perceived gap and say whether the evidence supports it.',
+    '4. Customer & demand — who buys, why, and how big the reachable market is.',
+    '5. Positioning & pricing recommendation.',
+    '6. Risks, assumptions to validate, and a prioritised 90-day action plan.',
+    'Cite sources where possible and clearly mark anything that is an assumption.'
+  ].join('\n'));
+  return L.join('\n');
+}
+
+const statusEl = document.getElementById('status');
+const setStatus = (msg, cls) => { statusEl.textContent = msg; statusEl.className = 'status ' + (cls || ''); };
+function showBrief(text) {
+  document.getElementById('outputText').textContent = text;
+  document.getElementById('output').classList.add('show');
+}
+
+function mailtoUrl(text) {
+  const subject = `Startup intake: ${v('name') || 'New startup'}`;
+  return `mailto:${TO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+}
+
+document.getElementById('copyBtn').onclick = async () => {
+  if (!validate()) return setStatus('Fill the required fields first.', 'err');
+  const text = buildBrief(); showBrief(text);
+  try { await navigator.clipboard.writeText(text); setStatus('Brief copied ✓', 'ok'); }
+  catch { setStatus('Copy blocked by the browser — select the text below.', 'err'); }
+};
+
+document.getElementById('mailBtn').onclick = () => {
+  if (!validate()) return setStatus('Fill the required fields first.', 'err');
+  const text = buildBrief(); showBrief(text);
+  window.location.href = mailtoUrl(text);
+};
+
+document.getElementById('intake').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (document.getElementById('honey').value) return; // bot
+  if (!validate()) return setStatus('Please complete the highlighted fields.', 'err');
+  const text = buildBrief(); showBrief(text);
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true; setStatus('Sending…');
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/' + TO_EMAIL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({
+        _subject: `Startup intake: ${v('name')}`,
+        _template: 'box',
+        _captcha: 'false',
+        _replyto: v('contact_email'),
+        name: v('contact_name'),
+        email: v('contact_email'),
+        brief: text
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || String(data.success) === 'false') throw new Error(data.message || res.status);
+    setStatus('Sent ✓ — the brief is on its way to the team.', 'ok');
+  } catch (err) {
+    setStatus('Automatic send failed — opening your email app instead. You can also use Copy brief.', 'err');
+    window.location.href = mailtoUrl(text);
+  } finally { btn.disabled = false; }
+});
+</script>
+</body>
+</html>
